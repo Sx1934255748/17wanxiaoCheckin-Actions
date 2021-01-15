@@ -25,47 +25,47 @@ def get_token(username, password):
     return user_dict["sessionId"]
 
 
-def get_post_json(jsons):
-    """
-    获取打卡数据
-    :param jsons: 用来获取打卡数据的json字段
-    :return:
-    """
-    retry = 0
-    while retry < 3:
-        try:
-            res = requests.post(url="https://reportedh5.17wanxiao.com/sass/api/epmpics", json=jsons, timeout=10).json()
-            # print(res)
-        except:
-            retry += 1
-            logging.warning('获取完美校园打卡post参数失败，正在重试...')
-            time.sleep(1)
-            continue
+# def get_post_json(jsons):
+#     """
+#     获取打卡数据
+#     :param jsons: 用来获取打卡数据的json字段
+#     :return:
+#     """
+#     retry = 0
+#     while retry < 3:
+#         try:
+#             res = requests.post(url="https://reportedh5.17wanxiao.com/sass/api/epmpics", json=jsons, timeout=10).json()
+#             # print(res)
+#         except:
+#             retry += 1
+#             logging.warning('获取完美校园打卡post参数失败，正在重试...')
+#             time.sleep(1)
+#             continue
 
-        if res['code'] != '10000':
-            # logging.warning(res)
-            return None
-        data = json.loads(res['data'])
-        # print(data)
-        post_dict = {
-            "areaStr": data['areaStr'],
-            "deptStr": data['deptStr'],
-            "deptid": data['deptStr']['deptid'],
-            "customerid": data['customerid'],
-            "userid": data['userid'],
-            "username": data['username'],
-            "stuNo": data['stuNo'],
-            "phonenum": data['phonenum'],
-            "templateid": data['templateid'],
-            "updatainfo": [{"propertyname": i["propertyname"], "value": i["value"]} for i in
-                           data['cusTemplateRelations']],
-            "checkbox": [{"description": i["decription"], "value": i["value"]} for i in
-                         data['cusTemplateRelations']],
-        }
-        # print(json.dumps(post_dict, sort_keys=True, indent=4, ensure_ascii=False))
-        logging.info('获取完美校园打卡post参数成功')
-        return post_dict
-    return None
+#         if res['code'] != '10000':
+#             # logging.warning(res)
+#             return None
+#         data = json.loads(res['data'])
+#         # print(data)
+#         post_dict = {
+#             "areaStr": data['areaStr'],
+#             "deptStr": data['deptStr'],
+#             "deptid": data['deptStr']['deptid'],
+#             "customerid": data['customerid'],
+#             "userid": data['userid'],
+#             "username": data['username'],
+#             "stuNo": data['stuNo'],
+#             "phonenum": data['phonenum'],
+#             "templateid": data['templateid'],
+#             "updatainfo": [{"propertyname": i["propertyname"], "value": i["value"]} for i in
+#                            data['cusTemplateRelations']],
+#             "checkbox": [{"description": i["decription"], "value": i["value"]} for i in
+#                          data['cusTemplateRelations']],
+#         }
+#         # print(json.dumps(post_dict, sort_keys=True, indent=4, ensure_ascii=False))
+#         logging.info('获取完美校园打卡post参数成功')
+#         return post_dict
+#     return None
 
 
 def receive_check_in(token, custom_id, post_dict):
@@ -114,8 +114,8 @@ def receive_check_in(token, custom_id, post_dict):
         "emergencyContactName": post_dict['emergencyContactName'],
         "helpInfo": "",
         "passingCity": "",
-        "longitude": "",  # 请在此处填写需要打卡位置的longitude
-        "latitude": "",  # 请在此处填写需要打卡位置的latitude
+        "longitude": "126.214981",  # 请在此处填写需要打卡位置的longitude
+        "latitude": "48.515812",  # 请在此处填写需要打卡位置的latitude
         "token": token,
     }
     headers = {
@@ -160,35 +160,35 @@ def get_recall_data(token):
     return None
 
 
-def healthy_check_in(token, post_dict):
-    """
-    第一类健康打卡
-    :param token: 用户令牌
-    :param post_dict: 打卡数据
-    :return:
-    """
-    check_json = {"businessType": "epmpics", "method": "submitUpInfo",
-                  "jsonData": {"deptStr": post_dict['deptStr'], "areaStr": post_dict['areaStr'],
-                               "reportdate": round(time.time() * 1000), "customerid": post_dict['customerid'],
-                               "deptid": post_dict['deptid'], "source": "app",
-                               "templateid": post_dict['templateid'], "stuNo": post_dict['stuNo'],
-                               "username": post_dict['username'], "phonenum": post_dict['phonenum'],
-                               "userid": post_dict['userid'], "updatainfo": post_dict['updatainfo'],
-                               "gpsType": 1, "token": token},
-                  }
-    try:
-        res = requests.post("https://reportedh5.17wanxiao.com/sass/api/epmpics", json=check_json).json()
-        # 以json格式打印json字符串
-        if res['code'] != '10000':
-            logging.warning(res)
-            return dict(status=1, res=res, post_dict=post_dict, check_json=check_json, type='healthy')
-        else:
-            logging.info(res)
-            return dict(status=1, res=res, post_dict=post_dict, check_json=check_json, type='healthy')
-    except:
-        errmsg = f"```打卡请求出错```"
-        logging.warning('校内打卡请求出错')
-        return dict(status=0, errmsg=errmsg)
+# def healthy_check_in(token, post_dict):
+#     """
+#     第一类健康打卡
+#     :param token: 用户令牌
+#     :param post_dict: 打卡数据
+#     :return:
+#     """
+#     check_json = {"businessType": "epmpics", "method": "submitUpInfo",
+#                   "jsonData": {"deptStr": post_dict['deptStr'], "areaStr": post_dict['areaStr'],
+#                                "reportdate": round(time.time() * 1000), "customerid": post_dict['customerid'],
+#                                "deptid": post_dict['deptid'], "source": "app",
+#                                "templateid": post_dict['templateid'], "stuNo": post_dict['stuNo'],
+#                                "username": post_dict['username'], "phonenum": post_dict['phonenum'],
+#                                "userid": post_dict['userid'], "updatainfo": post_dict['updatainfo'],
+#                                "gpsType": 1, "token": token},
+#                   }
+#     try:
+#         res = requests.post("https://reportedh5.17wanxiao.com/sass/api/epmpics", json=check_json).json()
+#         # 以json格式打印json字符串
+#         if res['code'] != '10000':
+#             logging.warning(res)
+#             return dict(status=1, res=res, post_dict=post_dict, check_json=check_json, type='healthy')
+#         else:
+#             logging.info(res)
+#             return dict(status=1, res=res, post_dict=post_dict, check_json=check_json, type='healthy')
+#     except:
+#         errmsg = f"```打卡请求出错```"
+#         logging.warning('校内打卡请求出错')
+#         return dict(status=0, errmsg=errmsg)
 
 
 def campus_check_in(username, token, post_dict, id):
